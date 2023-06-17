@@ -1,9 +1,11 @@
 import paho.mqtt.client as mqtt  # import the client1
 import time
+import requests
+import json
 
 topic = "zigbee2mqtt/0x00158d00094d2413"
-myGlobalMessagePayload = ''   #HERE!
-
+url = "http://localhost/api/v1/sensor_door_window/"
+headers = {'Content-Type': 'application/json'} 
 
 def on_connect(client, userdata, flags, rc):
     if rc == 0:
@@ -15,10 +17,18 @@ def on_connect(client, userdata, flags, rc):
 
 def on_message(client, userdata, msg):
     print("----------------------------")
-    global myGlobalMessagePayload
-    myGlobalMessagePayload  = msg.payload   #HERE!
-    print("----------------------------")
-    print(msg.topic+" "+str(msg.payload))
+    json_data = json.loads(msg.payload.decode("utf-8"))
+    json_data = {'id_sensor': str(topic), **json_data}
+    print(json.dumps(json_data))
+    x = requests.post(url, json=json_data, headers=headers)
+    print(x)
+    if x.status_code == 422:
+        # Si el código de estado es 422, muestra el contenido de la respuesta
+        print(x.json())  # Puedes usar .text en lugar de .json() si la respuesta no es JSON
+
+        # También puedes acceder a la información adicional proporcionada por el servidor en el encabezado de respuesta
+        print(x.headers)
+    
 
 mqtt.Client.connected_flag = False  # create flag in class
 broker = "localhost"
