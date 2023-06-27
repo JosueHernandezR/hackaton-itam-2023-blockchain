@@ -10,7 +10,7 @@ from substrateinterface import Keypair, KeypairType
 seed = "movie gain vessel where allow enjoy repeat govern nurse easily pave nephew"
 command = {
  "platform": "switch",
- "name": "turn_off",
+ "name": "turn_on",
  "params": {
   "entity_id": "switch.2gang_switch_l1"
  }
